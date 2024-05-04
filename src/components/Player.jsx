@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function Player({ name, symbol, isActive }) {
+export default function Player({ name, symbol, isActive, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
   const [playerName, setPlayerName] = useState(name);
 
@@ -9,7 +9,12 @@ export default function Player({ name, symbol, isActive }) {
   }
 
   const handleEditClick = () => {
-    setIsEditing((isEditing) => !isEditing);
+    setIsEditing((isEditing) => {
+      if (isEditing) {
+        onSave(symbol, playerName);
+      }
+      return !isEditing;
+    });
   };
 
   let playerHtml = <span className="player-name"> {playerName} </span>;
