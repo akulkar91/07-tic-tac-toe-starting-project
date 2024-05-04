@@ -20,6 +20,37 @@ function deriveActivePlayer(gameTurns) {
   }
   return currentPlayer;
 }
+function deriveWinner(gameBoard, players) {
+  let winner;
+  for (const combination of WINNING_COMBINATIONS) {
+    const firstSymbol =
+      gameBoard?.[combination?.[0]?.row]?.[combination?.[0]?.column];
+    const secondSymbol =
+      gameBoard?.[combination?.[1]?.row][combination[1].column];
+    const thirdSymbol =
+      gameBoard?.[combination?.[2]?.row][combination[2].column];
+
+    if (
+      firstSymbol &&
+      firstSymbol === secondSymbol &&
+      firstSymbol === thirdSymbol
+    ) {
+      winner = players[firstSymbol];
+    }
+  }
+  return winner;
+}
+function deriveGameBoard(gameTurns) {
+  let gameBoard = [...initialGameBoard.map((array) => [...array])];
+
+  for (const turn of gameTurns) {
+    const { square, player } = turn;
+    const { row, col } = square;
+    gameBoard[row][col] = player;
+  }
+  return gameBoard;
+}
+
 function App() {
   const [players, setPlayers] = useState({
     [player1]: "Player 1",
@@ -28,39 +59,11 @@ function App() {
   const [gameTurns, setGameTurns] = useState([]);
 
   const activePlayer = deriveActivePlayer(gameTurns);
+  const gameBoard = deriveGameBoard(gameTurns);
+  const winner = deriveWinner(gameBoard, players);
 
-  let gameBoard = [...initialGameBoard.map((array) => [...array])];
-  let winner;
-
-  for (const turn of gameTurns) {
-    const { square, player } = turn;
-    const { row, col } = square;
-    gameBoard[row][col] = player;
-  }
-
-  for (const combination of WINNING_COMBINATIONS) {
-    const firstSymbol =
-      gameBoard?.[combination?.[0]?.row]?.[combination?.[0]?.column];
-    console.log(firstSymbol);
-    const secondSymbol =
-      gameBoard?.[combination?.[1]?.row][combination[1].column];
-    console.log(secondSymbol);
-    const thirdSymbol =
-      gameBoard?.[combination?.[2]?.row][combination[2].column];
-    console.log(thirdSymbol);
-
-    if (
-      firstSymbol &&
-      // firstSymbol === player1 &&
-      firstSymbol === secondSymbol &&
-      firstSymbol === thirdSymbol
-    ) {
-      winner = players[firstSymbol];
-    }
-  }
   let isDraw = gameTurns?.length === 9 && !winner;
   function handleSelectSquare(rowIndex, colIndex) {
-    // setActivePlayer((active) => (active === player1 ? player2 : player1));
     setGameTurns((prevTurns) => {
       const currentPlayer = deriveActivePlayer(prevTurns);
       const updatedTurn = [
